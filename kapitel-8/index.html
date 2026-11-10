@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kapitel 8 – Gesundheitsmission</title>
+<style>
+:root{font-family:system-ui,sans-serif;color:#17213b;background:#eef4ff}*{box-sizing:border-box}body{margin:0;padding:20px}main{max-width:760px;margin:auto}.panel{background:white;padding:26px;border-radius:22px;box-shadow:0 12px 35px #27355b18}h1{margin:0 0 8px}small{color:#53637f}.bar{height:13px;background:#dce5f5;border-radius:20px;overflow:hidden;margin:18px 0}.fill{height:100%;width:0;background:#5278ed;transition:.25s}.pill{display:inline-block;padding:7px 13px;border-radius:20px;background:#e5edff;margin:5px 4px 8px 0}button{font:inherit;cursor:pointer;border:0;border-radius:13px;padding:14px 18px}button.primary{background:#375bd5;color:white;font-weight:700}button.option{width:100%;display:block;text-align:left;background:#f0f4fc;margin:9px 0;border:2px solid transparent}button.option:hover{border-color:#6788e8}button.option:disabled{cursor:default}button.good{background:#d7f6e5;border-color:#1d9857}button.bad{background:#ffe0e0;border-color:#d84e4e}.hidden{display:none}#feedback{min-height:48px;font-weight:650;margin:15px 0}.top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}.emoji{font-size:42px}input{font:inherit;padding:12px;border:2px solid #b8c6df;border-radius:12px;width:100%;margin:10px 0}footer{margin:18px 0;text-align:center;color:#53637f;font-size:13px}</style></head>
+<body><main><div class="panel"><div class="top"><span class="pill">🇩🇪 Klasse! Kapitel 8</span><span class="pill" id="score">⭐ 0 Punkte</span></div><h1>🏥 Gesundheitsmission</h1><p>Trainiere Körperteile, Krankheiten und Grammatik. Schaffe 25 Aufgaben und werde Sprachprofi!</p>
+<div id="intro"><label>Dein Vorname (freiwillig): <input id="name" maxlength="35" placeholder="Vorname"></label><button class="primary" id="start">Mission starten 🚀</button></div>
+<div id="game" class="hidden"><div class="top"><strong id="counter"></strong><strong id="topic"></strong></div><div class="bar"><div class="fill" id="fill"></div></div><div class="emoji" id="emoji">🩺</div><h2 id="question"></h2><div id="choices"></div><p id="feedback" aria-live="polite"></p><button class="primary hidden" id="next">Weiter →</button></div>
+<div id="end" class="hidden"><h2 id="result"></h2><p id="summary"></p><button class="primary" id="again">Noch einmal 🔁</button><button id="copy">Ergebnis kopieren 📋</button></div></div><footer>Übungsquiz · Keine Anmeldung · Ergebnisse bleiben auf deinem Gerät</footer></main>
+<script>
+const bank=[
+["Körperteile","Was bedeutet „der Rücken“?","back",["back","tooth","finger","neck"]],
+["Körperteile","Was bedeutet „das Knie“?","knee",["knee","arm","head","ear"]],
+["Körperteile","Was bedeutet „der Bauch“?","stomach",["stomach","mouth","leg","hand"]],
+["Körperteile","Was bedeutet „das Ohr“?","ear",["ear","eye","nose","foot"]],
+["Körperteile","Was bedeutet „der Zahn“?","tooth",["tooth","neck","finger","back"]],
+["Körperteile","Was bedeutet „die Hand“?","hand",["hand","head","leg","mouth"]],
+["Körperteile","Was bedeutet „der Hals“?","neck / throat",["neck / throat","nose","knee","eye"]],
+["Körperteile","Was bedeutet „das Auge“?","eye",["eye","ear","arm","tooth"]],
+["Gesundheit","Ich habe Halsschmerzen. Was tut weh?","der Hals",["der Hals","das Bein","der Finger","der Rücken"]],
+["Gesundheit","Meine Ohren tun weh. Welche Beschwerde passt?","Ohrenschmerzen",["Ohrenschmerzen","Bauchschmerzen","Kopfschmerzen","Zahnschmerzen"]],
+["Gesundheit","Mein Bauch tut weh. Welche Aussage passt?","Ich habe Bauchschmerzen.",["Ich habe Bauchschmerzen.","Ich bin erkältet.","Ich habe Zahnschmerzen.","Ich habe Fieber."]],
+["Gesundheit","Wie sagst du: I have a fever?","Ich habe Fieber.",["Ich habe Fieber.","Ich bin beim Arzt.","Ich hatte keine Zeit.","Ich habe Hausaufgaben."]],
+["Gesundheit","Wie sagst du: I have a cold?","Ich bin erkältet.",["Ich bin erkältet.","Ich habe Hunger.","Ich war zu Hause.","Ich habe Kopfschmerzen."]],
+["Ausreden","Warum warst du nicht in der Schule?","Ich war krank.",["Ich war krank.","Ich bin ein Arzt.","Ich darf krank.","Ich muss krank."]],
+["Ausreden","Wie sagst du: I was at the doctor's?","Ich war beim Arzt.",["Ich war beim Arzt.","Ich hatte beim Arzt.","Ich darf beim Arzt.","Ich muss beim Arzt."]],
+["Ausreden","Wie sagst du: I didn't have time?","Ich hatte keine Zeit.",["Ich hatte keine Zeit.","Ich war keine Zeit.","Ich darf keine Zeit.","Ich bin keine Zeit."]],
+["Modalverben","Ich ___ heute Hausaufgaben machen.","muss",["muss","musst","müssen","dürft"]],
+["Modalverben","Du ___ am Samstag ins Kino gehen.","darfst",["darfst","darf","dürfen","müssen"]],
+["Modalverben","Wir ___ heute lernen.","müssen",["müssen","muss","musst","müsst"]],
+["Modalverben","Ihr ___ hier nicht spielen.","dürft",["dürft","darfst","darf","dürfen"]],
+["Modalverben","Lukas ___ am Abend keine Cola trinken.","darf",["darf","darfst","dürfen","dürft"]],
+["Präteritum","Kim ___ gestern nicht in der Schule.","war",["war","hatte","waren","hattest"]],
+["Präteritum","Marie ___ einen Unfall.","hatte",["hatte","war","waren","wart"]],
+["Präteritum","Wir ___ auf dem Schulfest.","waren",["waren","war","hatten","hatte"]],
+["Präteritum","___ ihr Spaß?","Hattet",["Hattet","Wart","Hatte","War"]],
+["Präteritum","Du ___ gestern krank.","warst",["warst","war","waren","wart"]],
+["Präteritum","Sie (Plural) ___ viele Hausaufgaben.","hatten",["hatten","hatte","hattet","war"]],
+["Komposita","der Kopf + die Schmerzen = ?","die Kopfschmerzen",["die Kopfschmerzen","der Kopfschmerz","das Kopfschmerzen","die Kopfweh"]],
+["Komposita","das Fahrrad + der Unfall = ?","der Fahrradunfall",["der Fahrradunfall","das Fahrradunfall","die Fahrradunfall","der Unfallfahrrad"]],
+["Komposita","die Schule + das Fest = ?","das Schulfest",["das Schulfest","die Schulfest","der Schulfest","das Festschule"]],
+["Komposita","das Haus + die Aufgabe = ?","die Hausaufgabe",["die Hausaufgabe","das Hausaufgabe","der Hausaufgabe","die Aufgabehaus"]],
+["Deshalb","Ich war krank. ___ war ich nicht in der Schule.","Deshalb",["Deshalb","Aber","Oder","Und"]],
+["Deshalb","Welche Satzstellung ist richtig?","Ich hatte Kopfschmerzen, deshalb war ich nicht im Training.",["Ich hatte Kopfschmerzen, deshalb war ich nicht im Training.","Ich hatte Kopfschmerzen, deshalb ich war nicht im Training.","Ich hatte Kopfschmerzen, deshalb nicht ich war im Training.","Ich hatte Kopfschmerzen, deshalb ich nicht im Training war."]],
+["Deshalb","Adam trainiert jeden Tag, deshalb ___ er sehr schnell.","schwimmt",["schwimmt","er schwimmt","schwimmen","schwimmst"]],
+["Dialog","Wo warst du gestern?","Ich war beim Arzt.",["Ich war beim Arzt.","Ich habe beim Arzt.","Ich darf beim Arzt.","Ich muss beim Arzt."]]
+];
+let deck=[],index=0,points=0,locked=false;
+const $=id=>document.getElementById(id);
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function start(){deck=shuffle(bank).slice(0,25);index=0;points=0;$("intro").classList.add("hidden");$("end").classList.add("hidden");$("game").classList.remove("hidden");show()}
+function show(){locked=false;const q=deck[index];$("score").textContent="⭐ "+points+" Punkte";$("counter").textContent="Aufgabe "+(index+1)+" / "+deck.length;$("topic").textContent=q[0];$("fill").style.width=(index/deck.length*100)+"%";$("emoji").textContent=["🩺","💊","🧠","🦴","🏃"][index%5];$("question").textContent=q[1];$("feedback").textContent="";$("next").classList.add("hidden");$("choices").replaceChildren();shuffle(q[3]).forEach(answer=>{const b=document.createElement("button");b.className="option";b.textContent=answer;b.onclick=()=>choose(b,answer,q[2]);$("choices").append(b)})}
+function choose(btn,answer,correct){if(locked)return;locked=true;const yes=answer===correct;if(yes)points+=10;document.querySelectorAll(".option").forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add("good");else if(b===btn)b.classList.add("bad")});$("feedback").textContent=yes?"🎉 Richtig! +10 Punkte":"💡 Die richtige Antwort: "+correct;$("score").textContent="⭐ "+points+" Punkte";$("next").classList.remove("hidden")}
+function next(){index++;if(index>=deck.length){$("game").classList.add("hidden");$("end").classList.remove("hidden");$("fill").style.width="100%";$("result").textContent=points>=200?"🏆 Großartig!":points>=130?"🌟 Gut gemacht!":"💪 Weiter üben!";$("summary").textContent=($("name").value.trim()||"Du")+": "+points+" / 250 Punkte ("+Math.round(points/250*100)+" %).";}else show()}
+$("start").onclick=start;$("next").onclick=next;$("again").onclick=start;$("copy").onclick=()=>{const t="Kapitel 8 – Gesundheitsmission: "+$("summary").textContent;navigator.clipboard?.writeText(t).then(()=>alert("Kopiert!")).catch(()=>prompt("Ergebnis kopieren:",t))};
+</script></body></html>
